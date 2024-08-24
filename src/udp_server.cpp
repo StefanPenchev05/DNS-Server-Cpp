@@ -1,7 +1,6 @@
 #include <iostream>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include <cstring>
 #include "udp_server.hpp"
 #include "dns_message.hpp"
 
@@ -70,17 +69,10 @@ void UDPServer::handleRequest()
     Header requestHeader;
     requestHeader.parse(reinterpret_cast<std::uint8_t *>(buffer));
 
-     // Construct a response header
+    // Construct a response header
     Header responseHeader;
     responseHeader.tran_id = requestHeader.tran_id;
-    responseHeader.flags.qr = 1;     // Response
-    responseHeader.flags.opcode = 0; // Standard query
-    responseHeader.flags.aa = 1;     // Authoritative Answer
-    responseHeader.flags.tc = 0;     // Not Truncated
-    responseHeader.flags.rd = requestHeader.flags.rd; // Copy Recursion Desired
-    responseHeader.flags.ra = 1;     // Recursion Available
-    responseHeader.flags.z = 0;      // Reserved
-    responseHeader.flags.rcode = 0;  // No error
+    responseHeader.flags = htons(0x8180);
     responseHeader.question_count = requestHeader.question_count;
     responseHeader.answer_count = htons(1);
     responseHeader.authority_count = 0;
@@ -91,7 +83,7 @@ void UDPServer::handleRequest()
     responseHeader.serialize(responseBuffer);
 
     // Send the response back to the client
-    int send_len = sendto(this->socket_fd, responseBuffer, sizeof(responseBuffer), 0, (struct sockaddr *)&this->client_addr, addr_len);
+    int send_len = sendto(this->socket_fd, responseBuffer,0, 0, (struct sockaddr *)&this->client_addr, addr_len);
     if (send_len < 0)
     {
         std::cerr << "Send failed: " << strerror(errno) << std::endl;

@@ -26,7 +26,7 @@ class Header {
     public:
 
     std::uint16_t tran_id;           // Transaction ID (16-bit)
-    g_DNSFlags flags;            // Flags (16-bit) to represent various control flags
+    std::uint16_t flags;            // Flags (16-bit) to represent various control flags
     std::uint16_t question_count;   // Number of questions in the query
     std::uint16_t answer_count;     // Number of answers in the response
     std::uint16_t authority_count;  // Number of authority records in the response
