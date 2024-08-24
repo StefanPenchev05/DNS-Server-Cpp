@@ -35,7 +35,7 @@ void Header::setStandardQery(std::uint16_t query_id)
 // Function to parse a DNS message from a buffer
 void Header::parse(const std::uint8_t *buffer)
 {
-    this->tran_id = ntohs(*reinterpret_cast<const std::uint16_t *>(buffer));
+   this->tran_id = ntohs(*reinterpret_cast<const std::uint16_t *>(buffer));
     std::uint16_t flags = ntohs(*reinterpret_cast<const std::uint16_t *>(buffer + 2));
     this->flags.qr = (flags >> 15) & 0x1;
     this->flags.opcode = (flags >> 11) & 0xF;
