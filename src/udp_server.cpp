@@ -1,6 +1,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <cstring>
 #include "udp_server.hpp"
 #include "dns_message.hpp"
 
