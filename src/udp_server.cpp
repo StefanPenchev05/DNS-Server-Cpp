@@ -79,21 +79,32 @@ void UDPServer::handleRequest()
     responseHeader.flags.tc = 0;
     responseHeader.flags.rd = requestHeader.flags.rd;
     responseHeader.flags.ra = 1;
-    responseHeader.flags.z = 0; 
+    responseHeader.flags.z = 0;
     responseHeader.flags.rcode = 0;
     responseHeader.question_count = requestHeader.question_count;
     responseHeader.answer_count = htons(1);
     responseHeader.authority_count = 0;
     responseHeader.additional_count = 0;
 
+    memcpy(responseHeader.question.qname, requestHeader.question.qname, sizeof(requestHeader.question));
+    responseHeader.question.qclass = responseHeader.question.qclass;
+    responseHeader.question.qtype = requestHeader.question.qtype;
+
     // Serialize the response header
     std::uint8_t responseBuffer[1024];
+    memset(responseBuffer, 0, sizeof(responseBuffer));
     responseHeader.serialize(responseBuffer);
 
-    
+    int qname_len = 0;
+    for (int i = 0; responseHeader.question.qname[i] != nullptr; i++)
+    {
+        qname_len += strlen(responseHeader.question.qname[i]) + 1;
+    }
+
+    int total_length = 12 + qname_len + 2 + 2;
 
     // Send the response back to the client
-    int send_len = sendto(this->socket_fd, responseBuffer, 0, 0, (struct sockaddr *)&this->client_addr, addr_len);
+    int send_len = sendto(this->socket_fd, reinterpret_cast<char *>(responseBuffer),total_length , 0, (struct sockaddr *)&this->client_addr, addr_len);
     if (send_len < 0)
     {
         std::cerr << "Send failed: " << strerror(errno) << std::endl;
