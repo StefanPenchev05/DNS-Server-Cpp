@@ -90,20 +90,10 @@ void UDPServer::handleRequest()
     std::uint8_t responseBuffer[1024];
     responseHeader.serialize(responseBuffer);
 
-     // Copy the question section from the request to the response
-    std::memcpy(responseBuffer + 12, buffer + 12, recv_len - 12);
-
-    // Prepare a simple answer (not a real DNS answer, just an example)
-    int response_len = recv_len; // Include the question in the response length
-    std::uint8_t* answer_ptr = responseBuffer + response_len;
-    std::memcpy(answer_ptr, "\xc0\x0c\x00\x01\x00\x01\x00\x00\x00\x3c\x00\x04", 12); // Example answer header
-    answer_ptr += 12;
-    std::uint32_t ip_addr = htonl(0x7F000001); // 127.0.0.1 in network byte order
-    std::memcpy(answer_ptr, &ip_addr, sizeof(ip_addr));
-    response_len += 16; // 12 bytes header + 4 bytes IP address
+    
 
     // Send the response back to the client
-    int send_len = sendto(this->socket_fd, responseBuffer, response_len, 0, (struct sockaddr *)&this->client_addr, addr_len);
+    int send_len = sendto(this->socket_fd, responseBuffer, 0, 0, (struct sockaddr *)&this->client_addr, addr_len);
     if (send_len < 0)
     {
         std::cerr << "Send failed: " << strerror(errno) << std::endl;
