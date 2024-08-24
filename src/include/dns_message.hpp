@@ -19,6 +19,24 @@ struct g_DNSFlags {
     std::uint16_t ra : 1;     // Recursion Available flag
     std::uint16_t z : 3;      // Reserved for future use
     std::uint16_t rcode : 4;  // Response code
+
+    // Function to convert the flag struct to a 16-bit value
+    std::uint16_t toUint16() const {
+         return (qr << 15) | (opcode << 11) | (aa << 10) | 
+               (tc << 9) | (rd << 8) | (ra << 7) | (z << 4) | rcode;
+    }
+
+    // Function to set flags from a 16-bit value
+    void fromUint16(std::uint16_t value) {
+        qr = (value >> 15) & 0x01;
+        opcode = (value >> 11) & 0x0F;
+        aa = (value >> 10) & 0x01;
+        tc = (value >> 9) & 0x01;
+        rd = (value >> 8) & 0x01;
+        ra = (value >> 7) & 0x01;
+        z = (value >> 4) & 0x07;
+        rcode = value & 0x0F;
+    }
 };
 
 // Class to represent the DNS header
@@ -26,7 +44,7 @@ class Header {
     public:
 
     std::uint16_t tran_id;           // Transaction ID (16-bit)
-    std::uint16_t flags;            // Flags (16-bit) to represent various control flags
+    g_DNSFlags flags;            // Flags (16-bit) to represent various control flags
     std::uint16_t question_count;   // Number of questions in the query
     std::uint16_t answer_count;     // Number of answers in the response
     std::uint16_t authority_count;  // Number of authority records in the response

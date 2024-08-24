@@ -73,7 +73,7 @@ void UDPServer::handleRequest()
     // Construct a response header
     Header responseHeader;
     responseHeader.tran_id = requestHeader.tran_id;
-    responseHeader.flags = htons(0x8180);
+    responseHeader.flags = requestHeader.flags;
     responseHeader.question_count = requestHeader.question_count;
     responseHeader.answer_count = htons(1);
     responseHeader.authority_count = 0;
